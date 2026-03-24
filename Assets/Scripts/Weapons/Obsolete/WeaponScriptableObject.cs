@@ -1,0 +1,41 @@
+using UnityEngine;
+
+[System.Obsolete("OBSOLETE")]
+[CreateAssetMenu(fileName = "WeaponScriptableObject", menuName = "ScriptableObjects/Weapon")]
+public class WeaponScriptableObject : ScriptableObject
+{
+    [SerializeField] private GameObject prefab;
+    public GameObject Prefab { get => prefab; private set => prefab = value; }
+
+    // Base stats for weapons
+    [SerializeField] private float damage;
+    public float Damage { get => damage; private set => damage = value; }
+
+    [SerializeField] private float speed;
+    public float Speed { get => speed; private set => speed = value; }
+
+    [SerializeField] private float cooldownDuration;
+    public float CooldownDuration { get => cooldownDuration; private set => cooldownDuration = value; }
+
+    [SerializeField] private int pierce;
+    public int Pierce { get => pierce; private set => pierce = value; }
+
+    [SerializeField] private int level; // Not meant to be modified in game [Only in Editor]
+    public int Level { get => level; private set => level = value; }
+
+    [SerializeField] private GameObject nextLevelPrefab;
+    public GameObject NextLevelPrefab { get => nextLevelPrefab; private set => nextLevelPrefab = value; }
+
+    [SerializeField] private new string name;
+    public string Name { get => name; private set => name = value; }
+
+    [SerializeField] private string description; // What is the description of this weapon?
+                                                 // [If this weapon is a upgrade, place the description of the upgrade]
+    public string Description { get => description; private set => description = value; }
+
+    [SerializeField] private Sprite icon; // Not meant to be modified in game [Only in Editor]
+    public Sprite Icon { get => icon; private set => icon = value; }
+
+    [SerializeField] private int evolvedUpgradeToRemove; // Not meant to be modified in game [Only in Editor]
+    public int EvolvedUpgradeToRemove { get => evolvedUpgradeToRemove; private set => evolvedUpgradeToRemove = value; }
+}
