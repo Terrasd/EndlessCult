@@ -9,7 +9,9 @@ public class TreasureChest : MonoBehaviour
         {
             bool randomBool = Random.Range(0, 2) == 0;
 
+            OpenTreasureChest(p, randomBool);
 
+            Destroy(gameObject);
         }
     }
 

@@ -21,6 +21,7 @@ public class AuraWeapon : Weapon
             currentAura = Instantiate(currentStats.auraPrefab, transform);
             currentAura.weapon = this;
             currentAura.owner = owner;
+
             currentAura.transform.localScale = new Vector3(currentStats.area, currentStats.area, currentStats.area);
         }
     }
@@ -39,6 +40,9 @@ public class AuraWeapon : Weapon
         {
             return false;
         }
+
+        // Ensure that the aura is refreshed if a different aura is assigned for a higher level
+        OnEquip();
 
         // If there is an aura attached to this weapon, we update the aura
         if (currentAura)

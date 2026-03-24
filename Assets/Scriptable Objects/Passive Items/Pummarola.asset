@@ -14,6 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PassiveData
   icon: {fileID: -5857710155181142934, guid: 12b6681c286e9da49b7ab6014056e532, type: 3}
   maxLevel: 5
+  evolutionData:
+  - name: Soul Eater
+    condition: 1
+    consumes: 2
+    evolutionLevel: 2
+    catalysts:
+    - itemType: {fileID: 11400000, guid: a8994c29186b6de44b69f92caeea8029, type: 2}
+      level: 2
+    outcome:
+      itemType: {fileID: 11400000, guid: 0c8bb378c524319418ead121c46e2ee6, type: 2}
+      level: 1
   baseStats:
     name: Pummarola
     description: Gives some regen.
