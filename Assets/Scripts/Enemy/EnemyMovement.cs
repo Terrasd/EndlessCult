@@ -14,10 +14,11 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private int maxNeighbors;
     private ContactFilter2D contactFilter;
-    private Collider2D[] neihborBuffer = new Collider2D[16];
+    private Collider2D[] neighbourBuffer = new Collider2D[16];
 
     private void Awake()
     {
+        // Contact filter for enemies separation
         contactFilter = new ContactFilter2D();
         contactFilter.SetLayerMask(enemyLayer);
         contactFilter.useLayerMask = true;
@@ -62,7 +63,7 @@ public class EnemyMovement : MonoBehaviour
             transform.position,
             separationRadius,
             contactFilter,
-            neihborBuffer
+            neighbourBuffer
         );
 
         Vector2 force = Vector2.zero;
@@ -70,7 +71,7 @@ public class EnemyMovement : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            Transform other = neihborBuffer[i].transform;
+            Transform other = neighbourBuffer[i].transform;
             if (other == transform)
             {
                 continue;

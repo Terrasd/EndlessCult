@@ -189,6 +189,8 @@ public class PlayerStats : MonoBehaviour
     }
     public List<LevelRange> levelRanges;
 
+    private PlayerCollector collector;
+
     [Header("I-Frames")]
     public float invicibilityDuration;
     private float invicibilityTimer;
@@ -212,9 +214,11 @@ public class PlayerStats : MonoBehaviour
         }
 
         inventory = GetComponent<PlayerInventory>();
+        collector = GetComponentInChildren<PlayerCollector>();
 
         // Assign the variables
         baseStats = actualStats = characterData.stats;
+        collector.SetRadius(actualStats.magnet);
         health = actualStats.maxHealth;
     }
 
@@ -266,6 +270,7 @@ public class PlayerStats : MonoBehaviour
                 actualStats += p.GetBoosts();
             }
         }
+        collector.SetRadius(actualStats.magnet);
     }
 
     public void IncreaseXP(int amount)
@@ -359,6 +364,8 @@ public class PlayerStats : MonoBehaviour
             {
                 CurrentHealth = actualStats.maxHealth;
             }
+
+            UpdateHealthBar();
         }
     }
 
@@ -373,6 +380,8 @@ public class PlayerStats : MonoBehaviour
             {
                 CurrentHealth = actualStats.maxHealth;
             }
+
+            UpdateHealthBar();
         }
     }
 

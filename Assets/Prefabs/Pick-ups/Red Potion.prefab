@@ -12,8 +12,7 @@ GameObject:
   - component: {fileID: 6499912344068275826}
   - component: {fileID: 25143943871563476}
   - component: {fileID: 6707463603053812559}
-  - component: {fileID: 2415214876808314396}
-  - component: {fileID: -6081643426274724101}
+  - component: {fileID: 6610401048948950110}
   m_Layer: 0
   m_Name: Red Potion
   m_TagString: Untagged
@@ -168,7 +167,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.40659624, y: 0.59954834}
   m_EdgeRadius: 0
---- !u!114 &2415214876808314396
+--- !u!114 &6610401048948950110
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,23 +176,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7918954597564261988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3286e3703c881254eab700f1e4f29e6c, type: 3}
+  m_Script: {fileID: 11500000, guid: d9b0f5c0a0587b64c858aef121b73098, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthPotion
-  hasBeenCollected: 0
-  healthToRestore: 100
---- !u!114 &-6081643426274724101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7918954597564261988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b24757aa4825e9d4d807f362a182903d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BobbingAnimation
-  frequency: 3
-  magnitude: 0.1
-  direction: {x: 0, y: 1, z: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::Pickup
+  lifespan: 0.5
+  bobbingAnimation:
+    frequency: 2
+    direction: {x: 0, y: 0.3}
+  XP: 0
+  health: 50

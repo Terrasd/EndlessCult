@@ -1,19 +1,89 @@
 using UnityEngine;
 
-public class Pickup : MonoBehaviour, ICollectible
+public class Pickup : MonoBehaviour
 {
-    public bool hasBeenCollected = false;
+    public float lifespan = 0.5f;
+    protected PlayerStats target; // If the pickup has a target, then fly towards the target
+    protected float speed; // The speed at which the pickup travels
+    private Vector2 initialPosition;
+    private float initialOffset;
 
-    public virtual void Collect()
+    // To represent the bobbing animation of the object
+    [System.Serializable]
+    public struct BobbingAnimation
     {
-        hasBeenCollected = true;
+        public float frequency;
+        public Vector2 direction;
+    }
+    public BobbingAnimation bobbingAnimation = new BobbingAnimation
+    {
+        frequency = 2f,
+        direction = new Vector2(0, 0.3f)
+    };
+
+    [Header("Bonuses")]
+    public int XP;
+    public int health;
+
+    protected virtual void Start()
+    {
+        initialPosition = transform.position;
+        initialOffset = Random.Range(0, bobbingAnimation.frequency);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected virtual void Update()
     {
-        if (collision.CompareTag("Player"))
+        if (target)
         {
-            Destroy(gameObject);
+            // Move it towards the player and check the distance between
+            Vector2 distance = target.transform.position - transform.position;
+            if (distance.sqrMagnitude > speed * speed * Time.deltaTime)
+            {
+                transform.position += (Vector3)distance.normalized * speed * Time.deltaTime;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+        else
+        {
+            // Handle the animation of the object
+            transform.position = initialPosition + bobbingAnimation.direction * Mathf.Sin((Time.time + initialOffset) * bobbingAnimation.frequency);
+        }
+    }
+
+    public virtual bool Collect(PlayerStats target, float speed, float lifespan = 0f)
+    {
+        if (!this.target)
+        {
+            this.target = target;
+            this.speed = speed;
+            if (lifespan > 0)
+            {
+                this.lifespan = lifespan;
+                Destroy(gameObject, Mathf.Max(0.01f, this.lifespan));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (!target)
+        {
+            return;
+        }
+
+        if (XP != 0)
+        {
+            target.IncreaseXP(XP);
+        }
+
+        if (health != 0)
+        {
+            target.RestoreHealth(health);
         }
     }
 }
