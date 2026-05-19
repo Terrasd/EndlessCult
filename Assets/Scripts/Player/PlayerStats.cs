@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,15 @@ public class PlayerStats : MonoBehaviour
     private CharacterData characterData;
     public CharacterData.Stats baseStats;
     [SerializeField] private CharacterData.Stats actualStats;
+
+    public CharacterData.Stats Stats
+    {
+        get { return actualStats; }
+        set
+        {
+            actualStats = value;
+        }
+    }
 
     private float health;
 
@@ -25,153 +35,15 @@ public class PlayerStats : MonoBehaviour
             if (health != value)
             {
                 health = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentHealthDisplay.text = string.Format(
-                        "Health: {0} / {1}",
-                        health, actualStats.maxHealth
-                    );
-                }
-            }
-        }
-    }
-    public float MaxHealth
-    {
-        get { return actualStats.maxHealth; }
-
-        // If we try and set the max health, the UI interface
-        // on the pause screen will also be updated.
-        set
-        {
-            // Check if the value has changed
-            if (actualStats.maxHealth != value)
-            {
-                actualStats.maxHealth = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentHealthDisplay.text = string.Format(
-                        "Health: {0} / {1}",
-                        health, actualStats.maxHealth
-                    );
-                }
-                // Update the real time value of the stat
-                // Add any additional logic here that needs to be executed when the value changes
-            }
-        }
-    }
-
-    public float CurrentRecovery
-    {
-        get { return Recovery; }
-        set { Recovery = value; }
-    }
-    public float Recovery
-    {
-        get { return actualStats.recovery; }
-        set
-        {
-            // Check if the value has changed
-            if (actualStats.recovery != value)
-            {
-                actualStats.recovery = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentRecoveryDisplay.text = "Recovery: " + actualStats.recovery; 
-                }
-            }
-        }
-    }
-
-    public float CurrentMoveSpeed
-    {
-        get { return MoveSpeed; }
-        set { MoveSpeed = value; }
-    }
-    public float MoveSpeed
-    {
-        get { return actualStats.moveSpeed; }
-        set
-        {
-            // Check if the value has changed
-            if (actualStats.moveSpeed != value)
-            {
-                actualStats.moveSpeed = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentMoveSpeedDisplay.text = "Move Speed: " + actualStats.moveSpeed;
-                }
-            }
-        }
-    }
-
-    public float CurrentMight
-    {
-        get { return Might; }
-        set { Might = value; }
-    }
-    public float Might
-    {
-        get { return actualStats.might; }
-        set
-        {
-            // Check if the value has changed
-            if (actualStats.might != value)
-            {
-                actualStats.might = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentMightDisplay.text = "Might: " + actualStats.might;
-                }
-            }
-        }
-    }
-
-    public float CurrentProjectileSpeed
-    {
-        get { return Speed; }
-        set { Speed = value; }
-    }
-    public float Speed
-    {
-        get { return actualStats.speed; }
-        set
-        {
-            // Check if the value has changed
-            if (actualStats.speed != value)
-            {
-                actualStats.speed = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentProjectileSpeedDisplay.text = "Projectile Speed: " + actualStats.speed;
-                }
-            }
-        }
-    }
-
-    public float CurrentMagnet
-    {
-        get { return Magnet; }
-        set { Magnet = value; }
-    }
-    public float Magnet
-    {
-        get { return actualStats.magnet; }
-        set
-        {
-            // Check if the value has changed
-            if (actualStats.magnet != value)
-            {
-                actualStats.magnet = value;
-                if (GameManager.instance != null)
-                {
-                    GameManager.instance.currentMagnetDisplay.text = "Magnet: " + actualStats.magnet;
-                }
+                UpdateHealthBar();
             }
         }
     }
     #endregion
 
-    public ParticleSystem damageEffect;
+    [Header("Visuals")]
+    public ParticleSystem damageEffect; // If damage is dealt
+    public ParticleSystem blockedEffect; // If armor completely blocks damage
 
     // XP and level of the player
     [Header("XP / Level")]
@@ -229,14 +101,6 @@ public class PlayerStats : MonoBehaviour
 
         // Initialize the XP cap as the first XP cap increase 
         xpCap = levelRanges[0].xpCapIncrease;
-
-        // Set the current stats display
-        GameManager.instance.currentHealthDisplay.text = "Health: " + CurrentHealth;
-        GameManager.instance.currentRecoveryDisplay.text = "Recovery: " + CurrentRecovery;
-        GameManager.instance.currentMoveSpeedDisplay.text = "Move Speed: " + CurrentMoveSpeed;
-        GameManager.instance.currentMightDisplay.text = "Might: " + CurrentMight;
-        GameManager.instance.currentProjectileSpeedDisplay.text = "Projectile Speed: " + CurrentProjectileSpeed;
-        GameManager.instance.currentMagnetDisplay.text = "Magnet: " + CurrentMagnet;
 
         GameManager.instance.AssignChosenCharacterUI(characterData);
 
@@ -318,25 +182,33 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        // If the player is not currently invicible, reduce health and start invicibility
         if (!isInvicible)
         {
-            CurrentHealth -= damage;
+            // Take armor into account before dealing the damage
+            damage -= actualStats.armor;
 
-            // If there is a damage effect assigned, play it
-            if (damageEffect)
+            if (damage > 0)
             {
-                Destroy(Instantiate(damageEffect, transform.position, Quaternion.identity), 5f);
+                // Deal the damage
+                CurrentHealth -= damage;
+
+                // If there is a damage effect assigned, play it
+                if (damageEffect) Destroy(Instantiate(damageEffect, transform.position, Quaternion.identity), 5f);
+
+                if (CurrentHealth <= 0)
+                {
+                    Kill();
+                }
+            }
+            else
+            {
+                // If there is a blocked effect assigned, play it
+                if (blockedEffect) Destroy(Instantiate(blockedEffect, transform.position, Quaternion.identity), 5f);
             }
 
             invicibilityTimer = invicibilityDuration;
             isInvicible = true;
-
-            if (CurrentHealth <= 0)
-            {
-                Kill();
-            }
-
-            UpdateHealthBar();
         }
     }
 
@@ -373,8 +245,7 @@ public class PlayerStats : MonoBehaviour
     {
         if (CurrentHealth < actualStats.maxHealth)
         {
-            CurrentHealth += CurrentRecovery * Time.deltaTime;
-            CurrentHealth += Recovery * Time.deltaTime;
+            CurrentHealth += Stats.recovery * Time.deltaTime;
 
             if (CurrentHealth > actualStats.maxHealth)
             {
@@ -383,39 +254,5 @@ public class PlayerStats : MonoBehaviour
 
             UpdateHealthBar();
         }
-    }
-
-    [System.Obsolete("OLD FUNCTION")]
-    public void SpawnWeapon(GameObject weapon)
-    {
-        if (weaponIndex >= inventory.weaponSlots.Count - 1)
-        {
-            Debug.LogError("Inventory slots already full");
-            return;
-        }
-
-        // Spawn the starting weapon
-        GameObject spawnedWeapon = Instantiate(weapon, transform.position, Quaternion.identity);
-        spawnedWeapon.transform.SetParent(transform); // Set the weapon to be a child of the player
-        //inventory.AddWeapon(weaponIndex, spawnedWeapon.GetComponent<WeaponController>()); // Add the weapon to it's inventory slot
-
-        weaponIndex++;
-    }
-
-    [System.Obsolete("OLD FUNCTION")]
-    public void SpawnPassiveItem(GameObject passiveItem)
-    {
-        if (passiveItemIndex >= inventory.passiveSlots.Count - 1)
-        {
-            Debug.LogError("Inventory passive slots already full");
-            return;
-        }
-
-        // Spawn the starting passive item
-        GameObject spawnedPassiveItem = Instantiate(passiveItem, transform.position, Quaternion.identity);
-        spawnedPassiveItem.transform.SetParent(transform); // Set the weapon to be a child of the player
-        //inventory.AddPassiveItem(passiveItemIndex, spawnedPassiveItem.GetComponent<PassiveItem>()); // Add the weapon to it's inventory slot
-
-        passiveItemIndex++;
     }
 }

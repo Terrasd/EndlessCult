@@ -7,6 +7,8 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public Vector2 moveDir;
     [HideInInspector] public Vector2 lastMovedVector;
 
+    public const float DEFAULT_MOVESPEED = 4f;
+
     private Rigidbody2D rigidBody;
     private PlayerStats player;
 
@@ -64,6 +66,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        rigidBody.linearVelocity = new Vector2(moveDir.x * player.CurrentMoveSpeed, moveDir.y * player.CurrentMoveSpeed);
+        rigidBody.linearVelocity = moveDir * DEFAULT_MOVESPEED * player.Stats.moveSpeed;
     }
 }

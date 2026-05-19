@@ -16,9 +16,19 @@ MonoBehaviour:
   name: Warrior
   startingWeapon: {fileID: 11400000, guid: 34900edde3523ca4a8169f707dbdd8f1, type: 2}
   stats:
-    maxHealth: 1000
+    maxHealth: 120
     recovery: 0
-    moveSpeed: 5
+    armor: 0
+    moveSpeed: 0.8
     might: 1
+    area: 1
     speed: 1
+    duration: 1
+    amount: 0
+    cooldown: 1
+    luck: 1
+    growth: 1
+    greed: 1
+    curse: 1
     magnet: 2
+    revival: 0
